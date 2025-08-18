@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ファイルアップロード</title>
+</head>
+<body>
+    <h1>ファイルアップロード</h1>
+    
+    <form id="uploadForm">
+        <input type="file" id="fileInput" accept=".txt,.md,.pdf">
+        <button type="button" onclick="uploadFile()">アップロード</button>
+    </form>
+    
+    <h2>アップロード済みファイル</h2>
+    <div id="fileList"></div>
+    
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('ファイルを選択してください');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file_data', file);
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                alert('アップロード成功: ' + result.filename);
+                loadFiles();
+            } catch (error) {
+                alert('エラー: ' + error);
+            }
+        }
+        
+        async function loadFiles() {
+            try {
+                const response = await fetch('/files');
+                const files = await response.json();
+                
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = files.map(file => 
+                    `<p>${file.filename} (${file.size} bytes)</p>`
+                ).join('');
+            } catch (error) {
+                console.error('ファイル一覧取得エラー:', error);
+            }
+        }
+        
+        // ページ読み込み時にファイル一覧を表示
+        loadFiles();
+    </script>
+</body>
+</html>
