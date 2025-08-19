@@ -1,0 +1,40 @@
+# AI QA System Dependencies
+
+# FastAPI and web framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Pydantic for data validation
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# LangChain ecosystem
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-openai>=0.0.5
+langgraph>=0.0.20
+
+# Vector database and embeddings
+chromadb>=0.4.18
+sentence-transformers>=2.2.2
+
+# Document processing
+pypdf>=3.17.0
+python-docx>=1.1.0
+python-markdown>=3.5.0
+
+# Utilities
+python-dotenv>=1.0.0
+aiofiles>=23.2.1
+httpx>=0.25.0
+
+# Development dependencies (optional)
+# Uncomment the following lines if you need development tools
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.1.0
+# black>=23.0.0
+# isort>=5.12.0
+# flake8>=6.0.0
+# mypy>=1.7.0
