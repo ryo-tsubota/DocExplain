@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  docexplain:
+    build: .
+    container_name: docexplain-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      # Google Generative AI APIキーを環境変数から設定
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      # Google Cloud Storage認証情報
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/sa_key.json
+    volumes:
+      # ChromaDBデータの永続化
+      - ./chroma_db:/app/chroma_db
+      # データディレクトリのマウント
+      - ./data:/app/data
+      # Google Cloud Service Account キーファイル
+      - ./sa_key.json:/app/sa_key.json:ro
+      # 開発時のコードマウント（開発時のみ）
+      - ./app:/app/app
+    restart: unless-stopped
+    networks:
+      - docexplain-network
+
+networks:
+  docexplain-network:
+    driver: bridge
+
+volumes:
+  chroma_data:
+    driver: local

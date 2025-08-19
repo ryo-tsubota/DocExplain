@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 import uuid
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import os
+from ..interfaces.vector_db_repository import VectorDBRepository
 
 class GeminiEmbeddingFunction:
     def __init__(self, embeddings):
@@ -15,7 +16,7 @@ class GeminiEmbeddingFunction:
     def __call__(self, input):
         return self.embeddings.embed_documents(input)
 
-class ChromaDBRepository:
+class ChromaDBRepository(VectorDBRepository):
     def __init__(self, collection_name: str = "documents"):
         self.client = chromadb.PersistentClient(path="./chroma_db")
         self.collection_name = collection_name
@@ -67,3 +68,11 @@ class ChromaDBRepository:
             where=where_filter
         )
         return results
+    
+    def get_collection_info(self) -> Dict:
+        """コレクション情報を取得"""
+        count = self.collection.count()
+        return {
+            "name": self.collection_name,
+            "document_count": count
+        }

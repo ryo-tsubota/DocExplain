@@ -1,0 +1,227 @@
+/* DocExplain Custom Styles */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.375rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.375rem 0.375rem 0 0 !important;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.form-control {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.alert {
+    border-radius: 0.375rem;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.footer {
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Loading animation */
+.loading {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Answer content styling */
+.answer-content {
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.answer-content h1,
+.answer-content h2,
+.answer-content h3,
+.answer-content h4,
+.answer-content h5,
+.answer-content h6 {
+    color: #495057;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.answer-content h1 { font-size: 1.75rem; }
+.answer-content h2 { font-size: 1.5rem; }
+.answer-content h3 { font-size: 1.25rem; }
+.answer-content h4 { font-size: 1.1rem; }
+.answer-content h5 { font-size: 1rem; }
+.answer-content h6 { font-size: 0.9rem; }
+
+.answer-content p {
+    margin-bottom: 1rem;
+}
+
+.answer-content ul,
+.answer-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.answer-content li {
+    margin-bottom: 0.25rem;
+}
+
+.answer-content blockquote {
+    border-left: 4px solid #0d6efd;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    background-color: #f8f9fa;
+    font-style: italic;
+}
+
+.answer-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.answer-content table th,
+.answer-content table td {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.answer-content table th {
+    background-color: #e9ecef;
+    font-weight: 600;
+}
+
+.answer-content table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Code styling */
+.answer-content code {
+    background-color: #f8f9fa;
+    color: #e83e8c;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.answer-content pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.answer-content pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.875rem;
+}
+
+/* Syntax highlighting */
+.codehilite {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.codehilite pre {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Strong and emphasis */
+.answer-content strong {
+    font-weight: 600;
+    color: #495057;
+}
+
+.answer-content em {
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Links */
+.answer-content a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.answer-content a:hover {
+    color: #0b5ed7;
+    text-decoration: underline;
+}
+
+/* Horizontal rule */
+.answer-content hr {
+    border: none;
+    border-top: 2px solid #e9ecef;
+    margin: 2rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}

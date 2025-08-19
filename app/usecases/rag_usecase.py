@@ -1,13 +1,13 @@
-from ..infrastructure.vector_db import ChromaDBRepository
+from ..interfaces.vector_db_repository import VectorDBRepository
+from ..interfaces.llm_service import LLMService
 import re
 import os
 from typing import List, Dict, Any
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from ..infrastructure.llm import LLMService
 
 class IndexingUseCase:
-    def __init__(self, db_repository: ChromaDBRepository):
+    def __init__(self, db_repository: VectorDBRepository):
         self.vector_db = db_repository
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
@@ -26,21 +26,6 @@ class IndexingUseCase:
         for filename in file_list:
             file_path = os.path.join(directory_path, filename)
             
-            # 文字化けファイルをスキップ（正しいファイル名が存在する場合）
-            if filename.startswith('�'):
-                clean_name_mapping = {
-                    '��{�݌v��.md': '基本設計書.md',
-                    '�v��.md': '要件.md', 
-                    '�ڍא݌v��.md': '詳細設計書.md'
-                }
-                expected_clean_name = clean_name_mapping.get(filename)
-                if expected_clean_name and expected_clean_name in file_list:
-                    continue
-                
-                # 要件定義書は文字化けファイルマッピングにない可能性があるので特別処理
-                if '�v��' in filename and '要件定義書.md' in file_list:
-                    continue
-
             if filename.endswith(('.txt', '.md')):
                 loader = TextLoader(file_path, encoding='utf-8')
             elif filename.endswith('.pdf'):
@@ -82,9 +67,9 @@ class IndexingUseCase:
         return 0
 
 class RAGUseCase:
-    def __init__(self, model: str, db_repository: ChromaDBRepository):
+    def __init__(self, model: str, db_repository: VectorDBRepository, llm_service: LLMService):
         self.vector_db = db_repository
-        self.llm_service = LLMService()
+        self.llm_service = llm_service
     
     
     def search_and_generate_with_filter(self, query: str, where_filter: Dict = None, n_results: int = 10) -> Dict:

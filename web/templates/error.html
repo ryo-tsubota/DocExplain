@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}エラー - DocExplain{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> エラーが発生しました
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+                
+                <div class="d-grid">
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home"></i> ホームに戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

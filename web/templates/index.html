@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}DocExplain - ホーム{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-search"></i> ドキュメント質問システム
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    ドキュメントに関する質問を入力してください。AIが関連する情報を検索して回答します。
+                </p>
+                
+                <form method="post" action="/search">
+                    <div class="mb-3">
+                        <label for="question" class="form-label">質問</label>
+                        <textarea 
+                            class="form-control" 
+                            id="question" 
+                            name="question" 
+                            rows="4" 
+                            placeholder="例：要件について概要を教えて。また、関連するファイルも教えて。"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane"></i> 検索実行
+                        </button>
+                        <a href="/files" class="btn btn-outline-info">
+                            <i class="fas fa-file-alt"></i> 参照ファイル一覧を見る
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">使用例</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>要件について：</strong> 
+                            <code>要件について概要を教えて</code>
+                        </li>
+                        <li class="mb-2">
+                            <strong>設計について：</strong> 
+                            <code>システムの設計方針は何ですか？</code>
+                        </li>
+                        <li class="mb-2">
+                            <strong>技術について：</strong> 
+                            <code>使用している技術について説明して</code>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

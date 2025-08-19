@@ -41,7 +41,8 @@ if __name__ == "__main__":
 
     # RAG検索テスト
     print("\n=== RAG Search Test ===")
-    result = rag_controller.search("要件について概要を教えて。また、関連するファイルも教えて。")
+    input_word = input("質問事項を入力してください。")
+    result = rag_controller.search(input_word) # "要件について概要を教えて。また、関連するファイルも教えて。"
     print("Final Answer:", result.get("answer"))
     
 

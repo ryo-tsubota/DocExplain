@@ -3,8 +3,9 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from typing import List, Dict, Any
 import os
+from ..interfaces.llm_service import LLMService as LLMServiceInterface
 
-class LLMService:
+class LLMService(LLMServiceInterface):
     def __init__(self, model: str = "gemini-2.5-flash"):
         """key は環境変数から取得すること"""
         self.llm = ChatGoogleGenerativeAI(
@@ -39,7 +40,7 @@ class LLMService:
                 content = doc_info.get("content", "")
                 metadata = doc_info.get("metadata", {})
                 filename = metadata.get("filename", "不明")
-                context_items.append(f"--- ソースファイル: {filename} ---\n{content}")
+                context_items.append(f"--- ソースファイル: {filename} ---" + "\n" + content)
 
             context_text = "\n\n".join(context_items)
 

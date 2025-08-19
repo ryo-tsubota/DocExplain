@@ -1,0 +1,28 @@
+# DocExplain Dockerfile
+FROM python:3.11
+
+# 作業ディレクトリの設定
+WORKDIR /app
+
+# Pythonの依存関係をコピーしてインストール
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# アプリケーションコードをコピー
+COPY app/ ./app/
+COPY web/ ./web/
+COPY templates/ ./templates/
+COPY data/ ./data/
+
+# ChromaDBのデータディレクトリを作成
+RUN mkdir -p /app/chroma_db
+
+# 環境変数の設定
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# ポート8000を公開
+EXPOSE 8000
+
+# アプリケーション実行
+CMD ["python", "-B", "-m", "web.main"]

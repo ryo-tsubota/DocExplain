@@ -3,8 +3,8 @@ from typing import Dict, List, TypedDict, Optional
 from ..usecases.rag_usecase import RAGUseCase
 import os
 
-from ..infrastructure.vector_db import ChromaDBRepository
-from ..infrastructure.llm import LLMService
+from ..interfaces.vector_db_repository import VectorDBRepository
+from ..interfaces.llm_service import LLMService
 
 class RAGState(TypedDict):
     query: str
@@ -16,9 +16,9 @@ class RAGState(TypedDict):
 
 class RAGWorkflow:
 
-    def __init__(self, ai_key: str, db_repository: ChromaDBRepository):
-        self.rag_usecase = RAGUseCase(ai_key, db_repository)
-        self.llm_service = LLMService()
+    def __init__(self, ai_key: str, db_repository: VectorDBRepository, llm_service: LLMService):
+        self.rag_usecase = RAGUseCase(ai_key, db_repository, llm_service)
+        self.llm_service = llm_service
         self.graph = self._build_graph()
 
     def _select_file(self, state: RAGState) -> RAGState:
@@ -40,11 +40,13 @@ class RAGWorkflow:
                 return state
                 
             # LLMに最適なファイルを選んでもらう（複数選択対応）
+            newline = "\n"
+            file_list = newline.join([f"- {file}" for file in relevant_files])
             file_selection_prompt = f"""
             以下のファイル一覧から、ユーザーの質問「{query}」に関連する可能性の高いファイルを最大3つまで選んでください。
 
             ファイル一覧:
-            {"\n".join([f"- {file}" for file in relevant_files])}
+            {file_list}
 
             選択基準:
             - ファイル名から内容を推測し、質問に関連しそうなものを選ぶ

@@ -3,6 +3,7 @@ from ..interfaces.read_file import FileRepository
 from ..usecases.rag_usecase import IndexingUseCase
 from ..workflows.rag_workflow import RAGWorkflow
 from ..infrastructure.vector_db import ChromaDBRepository
+from ..infrastructure.llm import LLMService
 
 
 class FileController:
@@ -59,8 +60,9 @@ class FileController:
 class RAGController:
     def __init__(self, ai_key: str = None):
         db_repository = ChromaDBRepository()
+        llm_service = LLMService()
         self.indexing_usecase = IndexingUseCase(db_repository)
-        self.rag_workflow = RAGWorkflow(ai_key, db_repository)
+        self.rag_workflow = RAGWorkflow(ai_key, db_repository, llm_service)
 
     def create_index(self):
         """dataフォルダのファイルをインデックス化"""
@@ -73,16 +75,13 @@ class RAGController:
         print(f"検索クエリ: {query}")
         result = self.rag_workflow.execute(query)
         
-        print(f"回答: {result['answer']}")
-
-
         # ソース情報を詳細表示
         if result.get('sources'):
             for i, source in enumerate(result['sources'], 1):
                 print(f"  {i}. ファイル: {source['filename']}")
                 print(f"     パス: {source['file_path']}")
                 print(f"     チャンク: {source['chunk_number']}")
-                # print(f"     内容プレビュー: {source['content_preview']}")
+                
                 print()
         else:
             print("  参照ソースなし")
