@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -14,7 +14,8 @@ load_dotenv()
 
 # パスを追加してappモジュールをインポート
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from app.controller.controller import RAGController
+from app.controller.controller import RAGController, FileController
+from app.infrastructure.read_file import CloudStorageRepository
 
 # RAGコントローラーの初期化
 rag_controller = None
@@ -144,6 +145,115 @@ async def files(request: Request):
 async def health_check():
     """ヘルスチェック"""
     return {"status": "healthy"}
+
+@app.post("/download")
+async def download_data(request: Request):
+    """Cloud Storageからデータをダウンロードして更新"""
+    global rag_controller
+    
+    try:
+        # RAGコントローラーが初期化されているかチェック
+        if not rag_controller:
+            return templates.TemplateResponse("error.html", {
+                "request": request, 
+                "error": "RAGコントローラーが初期化されていません"
+            })
+        
+        # Cloud Storageの設定
+        bucket_name = os.getenv("GCS_BUCKET_NAME", "doc_explain")
+        cloud_storage = CloudStorageRepository(bucket_name)
+        file_controller = FileController("", cloud_storage)
+        
+        print(f"Cloud Storageからデータをダウンロード中... (Bucket: {bucket_name})")
+        
+        # Cloud Storageからファイル一覧を取得
+        gcs_files = file_controller.list_files("")
+        print(f"Cloud Storageに {len(gcs_files)} 個のファイルが見つかりました")
+        
+        # デバッグ: 取得したファイル一覧を表示
+        print("=== 取得したファイル一覧 ===")
+        for i, gcs_file in enumerate(gcs_files):
+            print(f"{i+1}: '{gcs_file}' (type: {type(gcs_file)})")
+        print("=========================")
+        
+        if not gcs_files:
+            return templates.TemplateResponse("error.html", {
+                "request": request,
+                "error": f"Cloud Storage (Bucket: {bucket_name}) にファイルが見つかりませんでした"
+            })
+        
+        # dataディレクトリを作成（存在しない場合）
+        data_dir = "data"
+        os.makedirs(data_dir, exist_ok=True)
+        
+        # 各ファイルをダウンロード
+        downloaded_count = 0
+        for gcs_file in gcs_files:
+            try:
+                print(f"\n--- 処理中のファイル: '{gcs_file}' ---")
+                filename = os.path.basename(gcs_file)
+                print(f"抽出されたファイル名: '{filename}'")
+                
+                # ファイル名が空の場合（フォルダの場合）をチェック
+                if not filename:
+                    print(f"ファイル名が空です。これはフォルダかもしれません: {gcs_file}")
+                    continue
+                
+                local_path = os.path.join(data_dir, filename)
+                print(f"ローカルパス: '{local_path}'")
+                
+                success = file_controller.download_file(gcs_file, data_dir)
+                if success:
+                    downloaded_count += 1
+                    print(f"✓ ダウンロード成功: {gcs_file} -> {local_path}")
+                else:
+                    print(f"✗ ダウンロード失敗: {gcs_file}")
+                    
+            except Exception as e:
+                print(f"✗ ファイル {gcs_file} のダウンロードでエラー: {str(e)}")
+        
+        print(f"ダウンロード完了: {downloaded_count}/{len(gcs_files)} ファイル")
+        
+        # ベクターインデックスを再作成
+        print("ベクターインデックスを再作成中...")
+        rag_controller.create_index()
+        print("ベクターインデックス更新完了!")
+        
+        # ファイル一覧を取得して表示
+        files = []
+        if os.path.exists(data_dir):
+            for filename in os.listdir(data_dir):
+                file_path = os.path.join(data_dir, filename)
+                if os.path.isfile(file_path):
+                    file_stat = os.stat(file_path)
+                    file_size = file_stat.st_size
+                    if file_size < 1024:
+                        size_str = f"{file_size} B"
+                    elif file_size < 1024 * 1024:
+                        size_str = f"{file_size / 1024:.1f} KB"
+                    else:
+                        size_str = f"{file_size / (1024 * 1024):.1f} MB"
+                    
+                    files.append({
+                        "filename": filename,
+                        "size": size_str,
+                        "path": file_path
+                    })
+        
+        return templates.TemplateResponse("files.html", {
+            "request": request,
+            "files": files,
+            "update_success": True,
+            "download_count": downloaded_count,
+            "total_count": len(gcs_files)
+        })
+        
+    except Exception as e:
+        print(f"ダウンロードエラー: {str(e)}")
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error": f"Cloud Storageからのダウンロード中にエラーが発生しました: {str(e)}"
+        })
 
 if __name__ == "__main__":
     import uvicorn

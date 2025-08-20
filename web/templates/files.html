@@ -16,6 +16,19 @@
                     システムが参照しているファイルの一覧です。これらのファイルから情報を検索して回答を生成します。
                 </p>
                 
+                {% if update_success %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>更新完了！</strong> 
+                    {% if download_count is defined and total_count is defined %}
+                        Cloud Storageから {{ download_count }}/{{ total_count }} ファイルをダウンロードし、データが正常に更新されました。
+                    {% else %}
+                        データが正常に更新されました。
+                    {% endif %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+                
                 {% if files %}
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
@@ -65,7 +78,12 @@
                 {% endif %}
                 
                 <div class="mt-4">
-                    <a href="/" class="btn btn-primary">
+                    <form method="post" action="/download" class="d-inline">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-cloud-download-alt"></i> Cloud Storageから更新
+                        </button>
+                    </form>
+                    <a href="/" class="btn btn-primary ms-2">
                         <i class="fas fa-arrow-left"></i> ホームに戻る
                     </a>
                     <a href="/search" class="btn btn-success ms-2">
