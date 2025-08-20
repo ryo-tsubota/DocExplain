@@ -23,4 +23,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8080
 
 # アプリケーション実行
-CMD ["python", "-B", "-m", "web.main"]
+CMD ["sh", "-c", "uvicorn web.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
