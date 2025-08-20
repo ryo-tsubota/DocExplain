@@ -30,7 +30,10 @@ class RAGWorkflow:
         
         # データフォルダのファイル一覧を取得
         try:
-            files = os.listdir("data")
+            if os.path.exists("data"):
+                files = os.listdir("data")
+            else:
+                files = []
             # .mdと.pdfファイルのみを対象（文字化けファイルを除外）
             relevant_files = [f for f in files if f.endswith(('.md', '.pdf', '.txt'))]
             
