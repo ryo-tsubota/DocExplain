@@ -25,10 +25,15 @@ async def lifespan(app: FastAPI):
     """アプリケーションのライフサイクル管理"""
     global rag_controller
     # 起動時
-    print("Creating vector index...")
-    rag_controller = RAGController()
-    rag_controller.create_index()
-    print("Vector index created successfully!")
+    try:
+        print("Creating vector index...")
+        rag_controller = RAGController()
+        rag_controller.create_index()
+        print("Vector index created successfully!")
+    except Exception as e:
+        print(f"Warning: Failed to create vector index: {e}")
+        print("Application will start without pre-loaded index")
+        rag_controller = None
     
     yield
     
@@ -144,7 +149,7 @@ async def files(request: Request):
 @app.get("/health")
 async def health_check():
     """ヘルスチェック"""
-    return {"status": "healthy"}
+    return {"status": "healthy", "rag_controller": rag_controller is not None}
 
 @app.post("/download")
 async def download_data(request: Request):

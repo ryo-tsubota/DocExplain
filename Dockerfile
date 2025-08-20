@@ -13,7 +13,7 @@ COPY app/ ./app/
 COPY web/ ./web/
 
 # ChromaDBのデータディレクトリを作成
-RUN mkdir -p /app/chroma_db
+RUN mkdir -p /app/chroma_db /app/data
 
 # 環境変数の設定
 ENV PYTHONPATH=/app
