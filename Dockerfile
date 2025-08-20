@@ -21,8 +21,8 @@ RUN mkdir -p /app/chroma_db
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# ポート8000を公開
-EXPOSE 8000
+# ポート8080を公開
+EXPOSE 8080
 
 # アプリケーション実行
 CMD ["python", "-B", "-m", "web.main"]
