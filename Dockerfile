@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # アプリケーションコードをコピー
 COPY app/ ./app/
 COPY web/ ./web/
+COPY data/ ./data/
 
 # ChromaDBのデータディレクトリを作成
 RUN mkdir -p /app/chroma_db /app/data
