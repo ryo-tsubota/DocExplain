@@ -1,5 +1,6 @@
 import chromadb
 from chromadb.config import Settings
+from chromadb.utils import embedding_functions
 from typing import List, Dict, Any
 import uuid
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -24,19 +25,21 @@ class ChromaDBRepository(VectorDBRepository):
         # クォータエラー回避のため、デフォルトembeddingを使用
         # self.langchain_embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
         # self.embedding_function = GeminiEmbeddingFunction(self.langchain_embeddings)
-
-        # 既存のコレクションをチェックして削除
         try:
-            existing_collection = self.client.get_collection(name=self.collection_name)
-            print(f"既存のコレクション '{self.collection_name}' を削除します")
-            self.client.delete_collection(name=self.collection_name)
+            # 既存のコレクションを取得（embedding function設定済み）
+            self.collection = self.client.get_collection(name=self.collection_name)
+            print(f"既存のコレクション '{self.collection_name}' を使用します")
         except:
-            pass  # コレクションが存在しない場合は無視
-
-        self.collection = self.client.create_collection(
-            name=self.collection_name,
-            metadata={"hnsw:space": "cosine"}
-        )
+            # 新しいコレクション作成時のみembedding functionを指定
+            embedding_func = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
+                api_key=os.getenv("GOOGLE_API_KEY"),
+            )
+            self.collection = self.client.create_collection(
+                name=self.collection_name,
+                metadata={"hnsw:space": "cosine"},
+                embedding_function=embedding_func
+            )
+            print(f"新しいコレクション '{self.collection_name}' を作成しました")
 
     def clear_collection(self):
         """コレクションを削除して再作成する"""

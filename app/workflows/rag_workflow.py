@@ -34,9 +34,8 @@ class RAGWorkflow:
                 files = os.listdir("data")
             else:
                 files = []
-            # .mdと.pdfファイルのみを対象（文字化けファイルを除外）
+            # .mdと.pdfファイルのみを対象
             relevant_files = [f for f in files if f.endswith(('.md', '.pdf', '.txt'))]
-            
             
             if not relevant_files:
                 state["selected_files"] = []
