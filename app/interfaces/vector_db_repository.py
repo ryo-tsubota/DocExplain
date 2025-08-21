@@ -48,3 +48,10 @@ class VectorDBRepository(ABC):
             コレクション情報（ドキュメント数等）
         """
         pass
+    
+    @abstractmethod
+    def cleanup_database(self) -> None:
+        """
+        データベース全体をクリーンアップ（物理ファイル削除）
+        """
+        pass

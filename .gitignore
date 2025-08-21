@@ -5,4 +5,7 @@ __pycache__/
 .Python
 sa_key.json
 .env
-.bin
+*.bin
+*.pdf
+*.sqlite3
+chroma_db/

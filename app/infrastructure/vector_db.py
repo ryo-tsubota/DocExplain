@@ -21,6 +21,9 @@ class ChromaDBRepository(VectorDBRepository):
     def __init__(self, collection_name: str = "documents"):
         self.client = chromadb.PersistentClient(path="./chroma_db")
         self.collection_name = collection_name
+        self.embedding_function = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
+                api_key=os.getenv("GOOGLE_API_KEY"),
+            )
 
         # クォータエラー回避のため、デフォルトembeddingを使用
         # self.langchain_embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
@@ -31,27 +34,59 @@ class ChromaDBRepository(VectorDBRepository):
             print(f"既存のコレクション '{self.collection_name}' を使用します")
         except:
             # 新しいコレクション作成時のみembedding functionを指定
-            embedding_func = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-                api_key=os.getenv("GOOGLE_API_KEY"),
-            )
+            
             self.collection = self.client.create_collection(
                 name=self.collection_name,
                 metadata={"hnsw:space": "cosine"},
-                embedding_function=embedding_func
+                embedding_function=self.embedding_function
             )
             print(f"新しいコレクション '{self.collection_name}' を作成しました")
 
     def clear_collection(self):
         """コレクションを削除して再作成する"""
         print(f"コレクションをクリアします: {self.collection_name}")
-        self.client.delete_collection(name=self.collection_name)
+        try:
+            self.client.delete_collection(name=self.collection_name)
+        except:
+            pass
         
-        # デフォルトembeddingで再作成
+        # 再作成
         self.collection = self.client.create_collection(
             name=self.collection_name,
-            metadata={"hnsw:space": "cosine"}
+            metadata={"hnsw:space": "cosine"},
+            embedding_function=self.embedding_function
         )
         print("コレクションを再作成しました。")
+    
+    def cleanup_database(self):
+        """データベース全体をクリーンアップ（物理ファイル削除）"""
+        import shutil
+        print("データベースディレクトリを完全にクリーンアップします...")
+        try:
+            # クライアント接続を閉じる
+            self.client = None
+            # ディレクトリ全体を削除
+            shutil.rmtree("./chroma_db")
+            print("chroma_dbディレクトリを削除しました")
+            # 新しいクライアントを作成
+            self.client = chromadb.PersistentClient(path="./chroma_db")
+            # コレクションを再作成
+            self.collection = self.client.create_collection(
+                name=self.collection_name,
+                metadata={"hnsw:space": "cosine"},
+                embedding_function=self.embedding_function
+            )
+            print("データベースを初期化しました")
+        except Exception as e:
+            print(f"クリーンアップエラー: {e}")
+            # エラー時は通常の初期化
+            self.client = chromadb.PersistentClient(path="./chroma_db")
+
+            self.collection = self.client.create_collection(
+                name=self.collection_name,
+                metadata={"hnsw:space": "cosine"},
+                embedding_function=self.embedding_function
+            )
 
     def add_documents(self, documents: List[str], metadatas: List[Dict[str,  Any]]):
         """ドキュメントをベクトルDBに追加"""

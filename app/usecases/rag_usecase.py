@@ -14,9 +14,12 @@ class IndexingUseCase:
             chunk_overlap=200
         )
 
-    def index_files_from_directory(self, directory_path: str = "data"):
+    def index_files_from_directory(self, directory_path: str = "data", force_cleanup: bool = False):
         """dataディレクトリのファイルをインデックス化"""
-        self.vector_db.clear_collection()
+        if force_cleanup:
+            self.vector_db.cleanup_database()
+        else:
+            self.vector_db.clear_collection()
         documents = []
         metadatas = []
 
